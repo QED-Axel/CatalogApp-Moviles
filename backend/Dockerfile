@@ -7,6 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.build.json ./
 COPY tsconfig.json ./
+COPY prisma.config.ts ./
 COPY prisma ./prisma/
 
 # Instalar dependencias (incluyendo devDependencies para compilar)
@@ -25,10 +26,11 @@ FROM node:22-alpine AS production
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma.config.ts ./
 # Instalar solo dependencias de producción
 RUN npm install --only=production
-# Instalar prisma CLI temporalmente para las migraciones
-RUN npm install prisma --no-save
+# Instalar prisma CLI y dotenv temporalmente para las migraciones y runtime
+RUN npm install prisma dotenv --no-save
 
 # Copiar el cliente generado de Prisma (incluyendo el engine) y los binarios compilados
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
