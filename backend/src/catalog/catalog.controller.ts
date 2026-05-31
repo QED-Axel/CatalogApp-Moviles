@@ -18,6 +18,16 @@ export class CatalogController {
     return this.catalogService.findAll();
   }
 
+  @Get('search')
+  searchMovies(@Query('q') query?: string) {
+    return this.catalogService.searchMovies(query || '');
+  }
+
+  @Get('trending')
+  getTrending() {
+    return this.catalogService.getTrending();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.catalogService.findOne(id);
@@ -41,13 +51,5 @@ export class CatalogController {
     return { message: 'Sincronización completada exitosamente', result };
   }
 
-  @Get('search')
-  searchMovies(@Query('q') query?: string) {
-    return this.catalogService.searchMovies(query || '');
-  }
 
-  @Get('trending')
-  getTrending() {
-    return this.catalogService.getTrending();
-  }
 }
