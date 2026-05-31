@@ -7,6 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.build.json ./
 COPY tsconfig.json ./
+COPY nest-cli.json ./
 COPY prisma.config.ts ./
 COPY prisma ./prisma/
 
@@ -42,4 +43,4 @@ COPY --from=builder /app/prisma ./prisma
 EXPOSE 3000
 
 # Script de inicio: Corre las migraciones y luego levanta la API
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
