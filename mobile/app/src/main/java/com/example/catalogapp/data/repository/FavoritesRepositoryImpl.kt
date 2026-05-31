@@ -5,8 +5,10 @@ import com.example.catalogapp.data.local.toDomainModel
 import com.example.catalogapp.data.local.toEntity
 import com.example.catalogapp.domain.model.MediaItem
 import com.example.catalogapp.domain.repository.FavoritesRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class FavoritesRepositoryImpl(
     private val favoriteDao: FavoriteDao
@@ -23,10 +25,14 @@ class FavoritesRepositoryImpl(
     }
 
     override suspend fun addFavorite(item: MediaItem) {
-        favoriteDao.insertFavorite(item.toEntity())
+        withContext(Dispatchers.IO) {
+            favoriteDao.insertFavorite(item.toEntity())
+        }
     }
 
     override suspend fun removeFavorite(id: Int) {
-        favoriteDao.deleteFavoriteById(id)
+        withContext(Dispatchers.IO) {
+            favoriteDao.deleteFavoriteById(id)
+        }
     }
 }
