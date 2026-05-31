@@ -13,5 +13,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  api:
+    build: .
+    container_name: catalog-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/catalog?schema=public
+      - TMDB_API_KEY=${TMDB_API_KEY}
+    depends_on:
+      - db
+
 volumes:
   postgres_data:
