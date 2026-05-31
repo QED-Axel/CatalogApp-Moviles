@@ -15,8 +15,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.catalogapp.R
 import com.example.catalogapp.domain.model.MediaItem
 import com.example.catalogapp.domain.model.Resource
 import com.example.catalogapp.ui.viewmodels.CatalogViewModel
@@ -38,14 +40,14 @@ fun HomeScreen(
                     Text(text = state.message ?: "Unknown Error", color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(onClick = { viewModel.fetchCatalog() }) {
-                        Text("Reintentar")
+                        Text(stringResource(id = R.string.btn_retry))
                     }
                 }
             }
             is Resource.Success -> {
                 val items = state.data ?: emptyList()
                 if (items.isEmpty()) {
-                    Text("No hay elementos en el catálogo.")
+                    Text(stringResource(id = R.string.error_no_catalog_items))
                 } else {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),

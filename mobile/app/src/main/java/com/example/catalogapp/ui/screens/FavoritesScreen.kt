@@ -13,7 +13,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.catalogapp.R
 import com.example.catalogapp.ui.viewmodels.FavoritesViewModel
 
 @Composable
@@ -25,7 +27,7 @@ fun FavoritesScreen(
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         if (favorites.isEmpty()) {
-            Text("No tienes favoritos guardados aún.")
+            Text(stringResource(id = R.string.error_no_favorites))
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),

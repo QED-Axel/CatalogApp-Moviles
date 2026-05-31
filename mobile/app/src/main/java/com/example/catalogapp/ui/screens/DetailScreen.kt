@@ -19,6 +19,8 @@ import com.example.catalogapp.ui.viewmodels.CatalogViewModel
 import com.example.catalogapp.ui.viewmodels.FavoritesViewModel
 import android.app.Application
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.catalogapp.R
 
 @Composable
 fun DetailScreen(
@@ -33,7 +35,7 @@ fun DetailScreen(
 
     if (mediaItem == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-            Text("No se encontró el elemento.")
+            Text(stringResource(id = R.string.error_item_not_found))
         }
         return
     }
@@ -43,7 +45,7 @@ fun DetailScreen(
             FloatingActionButton(onClick = { favoritesViewModel.toggleFavorite(mediaItem, isFavorite) }) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorito",
+                    contentDescription = stringResource(id = R.string.content_desc_favorite),
                     tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
@@ -86,7 +88,7 @@ fun DetailScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Sinopsis",
+                    text = stringResource(id = R.string.label_synopsis),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )

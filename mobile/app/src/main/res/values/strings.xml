@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">CatalogApp</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_dark_mode">Modo Oscuro</string>
+    <string name="title_movies_books">Películas y Libros</string>
+    <string name="error_invalid_id">Error: ID inválido</string>
+    <string name="error_item_not_found">No se encontró el elemento.</string>
+    <string name="error_no_favorites">No tienes favoritos guardados aún.</string>
+    <string name="btn_retry">Reintentar</string>
+    <string name="error_no_catalog_items">No hay elementos en el catálogo.</string>
+    <string name="label_synopsis">Sinopsis</string>
+    <string name="content_desc_home">Inicio</string>
+    <string name="content_desc_favorites">Favoritos</string>
+    <string name="content_desc_menu">Menú</string>
+    <string name="content_desc_favorite">Favorito</string>
 </resources>

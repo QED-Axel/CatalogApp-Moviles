@@ -23,7 +23,9 @@ import com.example.catalogapp.ui.screens.FavoritesScreen
 import com.example.catalogapp.ui.viewmodels.FavoritesViewModel
 import android.app.Application
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.catalogapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,12 +43,12 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(16.dp))
-                Text("CatalogApp", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                Text(stringResource(id = R.string.app_name), modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
                 HorizontalDivider()
                 NavigationDrawerItem(
-                    label = { Text("Inicio") },
+                    label = { Text(stringResource(id = R.string.nav_home)) },
                     selected = false,
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    icon = { Icon(Icons.Default.Home, contentDescription = stringResource(id = R.string.content_desc_home)) },
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Route.Home.route) {
@@ -55,9 +57,9 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text("Favoritos") },
+                    label = { Text(stringResource(id = R.string.nav_favorites)) },
                     selected = false,
-                    icon = { Icon(Icons.Default.Star, contentDescription = "Favorites") },
+                    icon = { Icon(Icons.Default.Star, contentDescription = stringResource(id = R.string.content_desc_favorites)) },
                     onClick = {
                         scope.launch { drawerState.close() }
                         navController.navigate(Route.Favorites.route)
@@ -65,7 +67,7 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 NavigationDrawerItem(
-                    label = { Text("Modo Oscuro") },
+                    label = { Text(stringResource(id = R.string.nav_dark_mode)) },
                     selected = false,
                     badge = { Switch(checked = isDarkMode, onCheckedChange = { themeViewModel.toggleTheme() }) },
                     onClick = { themeViewModel.toggleTheme() }
@@ -76,10 +78,10 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Películas y Libros") },
+                    title = { Text(stringResource(id = R.string.title_movies_books)) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(Icons.Default.Menu, contentDescription = stringResource(id = R.string.content_desc_menu))
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -112,7 +114,7 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
                     if (id != null) {
                         DetailScreen(id = id)
                     } else {
-                        Text("Error: ID inválido", modifier = Modifier.padding(16.dp))
+                        Text(stringResource(id = R.string.error_invalid_id), modifier = Modifier.padding(16.dp))
                     }
                 }
             }
