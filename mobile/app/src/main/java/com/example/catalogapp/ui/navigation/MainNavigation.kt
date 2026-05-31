@@ -1,0 +1,108 @@
+package com.example.catalogapp.ui.navigation
+
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.catalogapp.ui.viewmodels.ThemeViewModel
+import kotlinx.coroutines.launch
+
+import com.example.catalogapp.ui.screens.HomeScreen
+import com.example.catalogapp.ui.screens.DetailScreen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainNavigation(themeViewModel: ThemeViewModel) {
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val isDarkMode by themeViewModel.isDarkMode.collectAsState()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(16.dp))
+                Text("CatalogApp", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                HorizontalDivider()
+                NavigationDrawerItem(
+                    label = { Text("Inicio") },
+                    selected = false,
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(Route.Home.route) {
+                            popUpTo(Route.Home.route) { inclusive = true }
+                        }
+                    }
+                )
+                NavigationDrawerItem(
+                    label = { Text("Favoritos") },
+                    selected = false,
+                    icon = { Icon(Icons.Default.Star, contentDescription = "Favorites") },
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(Route.Favorites.route)
+                    }
+                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                NavigationDrawerItem(
+                    label = { Text("Modo Oscuro") },
+                    selected = false,
+                    badge = { Switch(checked = isDarkMode, onCheckedChange = { themeViewModel.toggleTheme() }) },
+                    onClick = { themeViewModel.toggleTheme() }
+                )
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Películas y Libros") },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                )
+            }
+        ) { paddingValues ->
+            NavHost(
+                navController = navController,
+                startDestination = Route.Home.route,
+                modifier = Modifier.padding(paddingValues)
+            ) {
+                composable(Route.Home.route) {
+                    HomeScreen(onNavigateToDetail = { id -> 
+                        navController.navigate(Route.Detail.createRoute(id)) 
+                    })
+                }
+                composable(Route.Favorites.route) {
+                    Text("Favorites Screen - (Próximamente)", modifier = Modifier.padding(16.dp))
+                }
+                composable(Route.Detail.route) { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+                    if (id != null) {
+                        DetailScreen(id = id)
+                    } else {
+                        Text("Error: ID inválido", modifier = Modifier.padding(16.dp))
+                    }
+                }
+            }
+        }
+    }
+}
