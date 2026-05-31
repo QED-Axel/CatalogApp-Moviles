@@ -27,8 +27,11 @@ WORKDIR /app
 COPY package*.json ./
 # Instalar solo dependencias de producción
 RUN npm install --only=production
+# Instalar prisma CLI temporalmente para las migraciones
+RUN npm install prisma --no-save
 
-# Copiar el cliente generado de Prisma y los binarios compilados
+# Copiar el cliente generado de Prisma (incluyendo el engine) y los binarios compilados
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
