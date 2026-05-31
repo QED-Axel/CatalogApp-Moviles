@@ -1,13 +1,42 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id           Int               @id @default(autoincrement())
+  email        String            @unique
+  name         String?
+  interactions UserInteraction[]
+  createdAt    DateTime          @default(now())
+}
+
+model MediaItem {
+  id           Int               @id @default(autoincrement())
+  title        String
+  type         String            // "movie" o "book"
+  synopsis     String
+  imageUrl     String?
+  year         Int
+  genre        String
+  interactions UserInteraction[]
+  createdAt    DateTime          @default(now())
+}
+
+model UserInteraction {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  mediaItemId  Int
+  isFavorite   Boolean   @default(false)
+  rating       Int?      // 1-5 estrellas
+  review       String?
+  
+  user         User      @relation(fields: [userId], references: [id])
+  mediaItem    MediaItem @relation(fields: [mediaItemId], references: [id])
+  createdAt    DateTime  @default(now())
+
+  @@unique([userId, mediaItemId])
 }
