@@ -19,6 +19,11 @@ import kotlinx.coroutines.launch
 
 import com.example.catalogapp.ui.screens.HomeScreen
 import com.example.catalogapp.ui.screens.DetailScreen
+import com.example.catalogapp.ui.screens.FavoritesScreen
+import com.example.catalogapp.ui.viewmodels.FavoritesViewModel
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +32,9 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val isDarkMode by themeViewModel.isDarkMode.collectAsState()
+    
+    val application = LocalContext.current.applicationContext as Application
+    val favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.provideFactory(application))
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -92,7 +100,12 @@ fun MainNavigation(themeViewModel: ThemeViewModel) {
                     })
                 }
                 composable(Route.Favorites.route) {
-                    Text("Favorites Screen - (Próximamente)", modifier = Modifier.padding(16.dp))
+                    FavoritesScreen(
+                        onNavigateToDetail = { id ->
+                            navController.navigate(Route.Detail.createRoute(id))
+                        },
+                        viewModel = favoritesViewModel
+                    )
                 }
                 composable(Route.Detail.route) { backStackEntry ->
                     val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()

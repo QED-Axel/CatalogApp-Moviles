@@ -16,16 +16,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.catalogapp.domain.model.Resource
 import com.example.catalogapp.ui.viewmodels.CatalogViewModel
+import com.example.catalogapp.ui.viewmodels.FavoritesViewModel
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun DetailScreen(
     id: Int,
-    viewModel: CatalogViewModel = viewModel(factory = CatalogViewModel.Factory)
+    viewModel: CatalogViewModel = viewModel(factory = CatalogViewModel.Factory),
+    favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.provideFactory(LocalContext.current.applicationContext as Application))
 ) {
     val state by viewModel.catalogState.collectAsState()
     val mediaItem = state.data?.find { it.id == id }
 
-    var isFavorite by remember { mutableStateOf(false) }
+    val isFavorite by favoritesViewModel.isFavorite(id).collectAsState()
 
     if (mediaItem == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
@@ -36,7 +40,7 @@ fun DetailScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { isFavorite = !isFavorite }) {
+            FloatingActionButton(onClick = { favoritesViewModel.toggleFavorite(mediaItem, isFavorite) }) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Favorito",
