@@ -6,5 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CatalogRepository {
     fun getCatalog(): Flow<Resource<List<MediaItem>>>
+    fun searchMovies(query: String): Flow<Resource<List<MediaItem>>>
+    fun getTrending(): Flow<Resource<List<MediaItem>>>
     fun getMediaItemById(id: Int): Flow<Resource<MediaItem>>
 }

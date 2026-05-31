@@ -17,13 +17,41 @@ class CatalogRepositoryImpl(
         emit(Resource.Loading())
         try {
             val response = apiService.getCatalog()
-            emit(Resource.Success(response))
-        } catch (e: HttpException) {
-            emit(Resource.Error("HTTP Error: ${e.message()}"))
-        } catch (e: IOException) {
-            emit(Resource.Error("No se pudo conectar al servidor. Revisa tu conexión."))
+            if (response.isSuccessful) {
+                emit(Resource.Success(response.body() ?: emptyList()))
+            } else {
+                emit(Resource.Error("HTTP Error: ${response.message()}"))
+            }
         } catch (e: Exception) {
-            emit(Resource.Error("Ocurrió un error inesperado: ${e.message}"))
+            emit(Resource.Error("Error: ${e.message}"))
+        }
+    }
+
+    override fun searchMovies(query: String): Flow<Resource<List<MediaItem>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = apiService.searchMovies(query)
+            if (response.isSuccessful) {
+                emit(Resource.Success(response.body() ?: emptyList()))
+            } else {
+                emit(Resource.Error("HTTP Error: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            emit(Resource.Error("Error: ${e.message}"))
+        }
+    }
+
+    override fun getTrending(): Flow<Resource<List<MediaItem>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = apiService.getTrending()
+            if (response.isSuccessful) {
+                emit(Resource.Success(response.body() ?: emptyList()))
+            } else {
+                emit(Resource.Error("HTTP Error: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            emit(Resource.Error("Error: ${e.message}"))
         }
     }
 

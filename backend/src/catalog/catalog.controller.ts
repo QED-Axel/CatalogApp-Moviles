@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, ParseIntPipe, Query } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { CreateMediaItemDto } from './dto/create-media-item.dto';
 import { UpdateMediaItemDto } from './dto/update-media-item.dto';
@@ -39,5 +39,15 @@ export class CatalogController {
   async syncTmdb() {
     const result = await this.catalogService.syncTmdb();
     return { message: 'Sincronización completada exitosamente', result };
+  }
+
+  @Get('tmdb/search')
+  searchMovies(@Query('q') query?: string, @Body('query') bodyQuery?: string) {
+    return this.catalogService.searchMovies(query || bodyQuery || '');
+  }
+
+  @Get('tmdb/trending')
+  getTrending() {
+    return this.catalogService.getTrending();
   }
 }
