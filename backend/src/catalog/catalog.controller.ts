@@ -33,4 +33,11 @@ export class CatalogController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.catalogService.remove(id);
   }
+
+  @Post('sync-tmdb')
+  @HttpCode(HttpStatus.OK)
+  async syncTmdb() {
+    const result = await this.catalogService.syncTmdb();
+    return { message: 'Sincronización completada exitosamente', result };
+  }
 }
