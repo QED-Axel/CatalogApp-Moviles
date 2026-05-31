@@ -60,4 +60,6 @@ export declare class CatalogController {
             count: number;
         };
     }>;
+    searchMovies(query?: string): Promise<any>;
+    getTrending(): Promise<any>;
 }

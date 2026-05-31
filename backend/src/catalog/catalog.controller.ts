@@ -41,12 +41,12 @@ export class CatalogController {
     return { message: 'Sincronización completada exitosamente', result };
   }
 
-  @Get('tmdb/search')
-  searchMovies(@Query('q') query?: string, @Body('query') bodyQuery?: string) {
-    return this.catalogService.searchMovies(query || bodyQuery || '');
+  @Get('search')
+  searchMovies(@Query('q') query?: string) {
+    return this.catalogService.searchMovies(query || '');
   }
 
-  @Get('tmdb/trending')
+  @Get('trending')
   getTrending() {
     return this.catalogService.getTrending();
   }

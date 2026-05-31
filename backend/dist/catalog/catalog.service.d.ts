@@ -57,4 +57,6 @@ export declare class CatalogService {
     syncTmdb(): Promise<{
         count: number;
     }>;
+    searchMovies(query: string): Promise<any>;
+    getTrending(): Promise<any>;
 }

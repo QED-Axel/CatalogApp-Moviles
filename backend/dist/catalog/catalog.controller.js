@@ -41,6 +41,12 @@ let CatalogController = class CatalogController {
         const result = await this.catalogService.syncTmdb();
         return { message: 'Sincronización completada exitosamente', result };
     }
+    searchMovies(query) {
+        return this.catalogService.searchMovies(query || '');
+    }
+    getTrending() {
+        return this.catalogService.getTrending();
+    }
 };
 exports.CatalogController = CatalogController;
 __decorate([
@@ -87,6 +93,19 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CatalogController.prototype, "syncTmdb", null);
+__decorate([
+    (0, common_1.Get)('search'),
+    __param(0, (0, common_1.Query)('q')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], CatalogController.prototype, "searchMovies", null);
+__decorate([
+    (0, common_1.Get)('trending'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], CatalogController.prototype, "getTrending", null);
 exports.CatalogController = CatalogController = __decorate([
     (0, common_1.Controller)('catalog'),
     __metadata("design:paramtypes", [catalog_service_1.CatalogService])

@@ -10,10 +10,10 @@ interface CatalogApiService {
     @GET("catalog")
     suspend fun getCatalog(): Response<List<MediaItem>>
 
-    @GET("catalog/tmdb/search")
+    @GET("catalog/search")
     suspend fun searchMovies(@Query("q") query: String): Response<List<MediaItem>>
 
-    @GET("catalog/tmdb/trending")
+    @GET("catalog/trending")
     suspend fun getTrending(): Response<List<MediaItem>>
 
     @GET("catalog/{id}")

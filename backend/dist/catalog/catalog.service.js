@@ -83,6 +83,42 @@ let CatalogService = class CatalogService {
         }
         return { count };
     }
+    async searchMovies(query) {
+        const apiKey = process.env.TMDB_API_KEY;
+        if (!apiKey)
+            throw new common_1.NotFoundException('Falta TMDB_API_KEY en el entorno');
+        const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-MX&query=${encodeURIComponent(query)}&page=1`);
+        const data = await response.json();
+        if (!data.results)
+            return [];
+        return data.results.map((item) => ({
+            id: item.id,
+            title: item.title,
+            type: 'movie',
+            synopsis: item.overview || 'Sin descripción',
+            imageUrl: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null,
+            year: item.release_date ? parseInt(item.release_date.split('-')[0], 10) : 2000,
+            genre: 'Search Result'
+        }));
+    }
+    async getTrending() {
+        const apiKey = process.env.TMDB_API_KEY;
+        if (!apiKey)
+            throw new common_1.NotFoundException('Falta TMDB_API_KEY en el entorno');
+        const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${apiKey}&language=es-MX`);
+        const data = await response.json();
+        if (!data.results)
+            return [];
+        return data.results.map((item) => ({
+            id: item.id,
+            title: item.title || item.name,
+            type: 'movie',
+            synopsis: item.overview || 'Sin descripción',
+            imageUrl: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null,
+            year: item.release_date ? parseInt(item.release_date.split('-')[0], 10) : (item.first_air_date ? parseInt(item.first_air_date.split('-')[0], 10) : 2000),
+            genre: 'Trending'
+        }));
+    }
 };
 exports.CatalogService = CatalogService;
 exports.CatalogService = CatalogService = __decorate([
