@@ -22,4 +22,4 @@ npm run start:dev
 ### 2. Aplicación Móvil
 Abre la carpeta `mobile/` con **Android Studio** (Koala o superior). El proyecto utilizará Gradle para sincronizar las dependencias.
 
-> **Nota:** La URL base para el consumo de la API se encuentra configurada en el cliente Retrofit (por defecto `10.0.2.2` si usas el emulador de Android).
+> **Nota de Producción:** La URL base para el consumo de la API se encuentra configurada apuntando a nuestro backend desplegado en Google Cloud (GCP) en la IP `35.255.161.52`. Para ejecutar de forma local, cambia el `BASE_URL` en `RetrofitClient.kt`.
