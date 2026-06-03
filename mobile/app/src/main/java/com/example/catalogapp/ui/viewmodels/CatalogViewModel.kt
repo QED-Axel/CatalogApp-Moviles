@@ -34,7 +34,11 @@ class CatalogViewModel(
     fun fetchCatalog() {
         viewModelScope.launch {
             repository.getCatalog().collect { resource ->
-                _catalogState.value = resource
+                if (resource is Resource.Success && resource.data != null) {
+                    _catalogState.value = Resource.Success(resource.data.shuffled())
+                } else {
+                    _catalogState.value = resource
+                }
             }
         }
     }

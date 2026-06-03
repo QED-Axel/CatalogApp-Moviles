@@ -54,27 +54,33 @@ export class CatalogService {
     const apiKey = process.env.TMDB_API_KEY;
     if (!apiKey) throw new NotFoundException('Falta TMDB_API_KEY en el entorno');
 
-    const response = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=es-MX&page=1`);
-    const data = await response.json();
-
-    if (!data.results) return { count: 0 };
+    await this.prisma.mediaItem.deleteMany({
+      where: { genre: 'Popular' }
+    });
 
     let count = 0;
-    for (const item of data.results) {
-      const yearStr = item.release_date ? item.release_date.split('-')[0] : '2000';
-      const yearNum = parseInt(yearStr, 10);
+    for (let page = 1; page <= 5; page++) {
+      const response = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=es-MX&page=${page}`);
+      const data = await response.json();
 
-      await this.prisma.mediaItem.create({
-        data: {
-          title: item.title,
-          type: 'movie',
-          synopsis: item.overview || 'Sin descripción',
-          imageUrl: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null,
-          year: isNaN(yearNum) ? 2000 : yearNum,
-          genre: 'Popular' // Simplificación para la fase inicial
-        }
-      });
-      count++;
+      if (!data.results) continue;
+
+      for (const item of data.results) {
+        const yearStr = item.release_date ? item.release_date.split('-')[0] : '2000';
+        const yearNum = parseInt(yearStr, 10);
+
+        await this.prisma.mediaItem.create({
+          data: {
+            title: item.title,
+            type: 'movie',
+            synopsis: item.overview || 'Sin descripción',
+            imageUrl: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null,
+            year: isNaN(yearNum) ? 2000 : yearNum,
+            genre: 'Popular' // Simplificación para la fase inicial
+          }
+        });
+        count++;
+      }
     }
     return { count };
   }

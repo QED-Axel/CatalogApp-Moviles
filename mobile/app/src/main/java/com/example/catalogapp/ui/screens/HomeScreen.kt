@@ -32,6 +32,8 @@ import com.example.catalogapp.ui.viewmodels.CatalogViewModel
 
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -50,92 +52,92 @@ fun HomeScreen(
         onRefresh = { viewModel.refreshAll() },
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-        ) {
-        // Barra de búsqueda
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { viewModel.searchMovies(it) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            placeholder = { Text("Buscar películas...") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
-            singleLine = true,
-            shape = MaterialTheme.shapes.medium
-        )
-
-        // Contenido Principal
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (catalogState is Resource.Loading || trendingState is Resource.Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (catalogState is Resource.Error && trendingState is Resource.Error) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    Text(text = catalogState.message ?: "Unknown Error", color = MaterialTheme.colorScheme.error)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { 
-                        viewModel.fetchCatalog()
-                        viewModel.fetchTrending() 
-                    }) {
-                        Text(stringResource(id = R.string.btn_retry))
-                    }
+        if (catalogState is Resource.Error && trendingState is Resource.Error) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                Text(text = catalogState.message ?: "Unknown Error", color = MaterialTheme.colorScheme.error)
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { 
+                    viewModel.fetchCatalog()
+                    viewModel.fetchTrending() 
+                }) {
+                    Text(stringResource(id = R.string.btn_retry))
                 }
-            } else {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // Mostrar Tendencias solo si no hay búsqueda activa
-                    if (searchQuery.isBlank() && trendingState is Resource.Success) {
-                        val trendingItems = trendingState.data ?: emptyList()
-                        if (trendingItems.isNotEmpty()) {
-                            Text(
-                                text = "Tendencias de Hoy",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                            )
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(trendingItems) { item ->
-                                    TrendingItemCard(mediaItem = item, onClick = { onNavigateToDetail(item.id) })
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // Barra de búsqueda
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { viewModel.searchMovies(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                        placeholder = { Text("Buscar películas...") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.medium
+                    )
+                }
+
+                // Tendencias
+                if (searchQuery.isBlank() && trendingState is Resource.Success) {
+                    val trendingItems = trendingState.data ?: emptyList()
+                    if (trendingItems.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Column {
+                                Text(
+                                    text = "Tendencias de Hoy",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                                )
+                                LazyRow(
+                                    contentPadding = PaddingValues(horizontal = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(trendingItems) { item ->
+                                        TrendingItemCard(mediaItem = item, onClick = { onNavigateToDetail(item.id) })
+                                    }
                                 }
+                                Spacer(modifier = Modifier.height(16.dp))
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
+                }
 
-                    // Catálogo General o Resultados de Búsqueda
+                // Titulo del catálogo
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     val titleText = if (searchQuery.isNotBlank()) "Resultados de Búsqueda" else "Catálogo Completo"
                     Text(
                         text = titleText,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     )
+                }
 
-                    val catalogItems = catalogState.data ?: emptyList()
-                    if (catalogItems.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                // Elementos del catálogo
+                val catalogItems = catalogState.data ?: emptyList()
+                if (catalogItems.isEmpty() && catalogState !is Resource.Loading) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
                             Text(stringResource(id = R.string.error_no_catalog_items))
                         }
-                    } else {
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(8.dp),
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(catalogItems) { item ->
-                                MediaItemCard(mediaItem = item, onClick = { onNavigateToDetail(item.id) })
-                            }
-                        }
+                    }
+                } else {
+                    items(catalogItems) { item ->
+                        MediaItemCard(mediaItem = item, onClick = { onNavigateToDetail(item.id) })
                     }
                 }
             }
-        }
         }
     }
 }
