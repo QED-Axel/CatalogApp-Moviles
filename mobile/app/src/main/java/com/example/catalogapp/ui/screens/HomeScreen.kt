@@ -1,6 +1,7 @@
 package com.example.catalogapp.ui.screens
 
 import android.app.Application
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -31,15 +32,17 @@ import com.example.catalogapp.ui.viewmodels.CatalogViewModel
 
 @Composable
 fun HomeScreen(
+    viewModel: CatalogViewModel,
     onNavigateToDetail: (Int) -> Unit
 ) {
-    val viewModel: CatalogViewModel = viewModel(factory = CatalogViewModel.Factory)
 
     val catalogState by viewModel.catalogState.collectAsState()
     val trendingState by viewModel.trendingState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+    ) {
         // Barra de búsqueda
         OutlinedTextField(
             value = searchQuery,
@@ -128,12 +131,13 @@ fun HomeScreen(
 
 @Composable
 fun TrendingItemCard(mediaItem: MediaItem, onClick: () -> Unit) {
-    Card(
+    ElevatedCard(
         modifier = Modifier
             .width(140.dp)
             .height(210.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -164,12 +168,13 @@ fun TrendingItemCard(mediaItem: MediaItem, onClick: () -> Unit) {
 
 @Composable
 fun MediaItemCard(mediaItem: MediaItem, onClick: () -> Unit) {
-    Card(
+    ElevatedCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
     ) {
         Column {
             AsyncImage(

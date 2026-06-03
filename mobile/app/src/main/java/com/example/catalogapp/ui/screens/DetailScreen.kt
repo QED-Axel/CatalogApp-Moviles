@@ -1,5 +1,6 @@
 package com.example.catalogapp.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,11 +26,13 @@ import com.example.catalogapp.R
 @Composable
 fun DetailScreen(
     id: Int,
-    viewModel: CatalogViewModel = viewModel(factory = CatalogViewModel.Factory),
-    favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.provideFactory(LocalContext.current.applicationContext as Application))
+    viewModel: CatalogViewModel,
+    favoritesViewModel: FavoritesViewModel
 ) {
-    val state by viewModel.catalogState.collectAsState()
-    val mediaItem = state.data?.find { it.id == id }
+    val catalogState by viewModel.catalogState.collectAsState()
+    val trendingState by viewModel.trendingState.collectAsState()
+    
+    val mediaItem = catalogState.data?.find { it.id == id } ?: trendingState.data?.find { it.id == id }
 
     val isFavorite by favoritesViewModel.isFavorite(id).collectAsState()
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpCode, HttpStatus, ParseIntPipe, Query, Headers } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { CreateMediaItemDto } from './dto/create-media-item.dto';
 import { UpdateMediaItemDto } from './dto/update-media-item.dto';
@@ -19,13 +19,13 @@ export class CatalogController {
   }
 
   @Get('search')
-  searchMovies(@Query('q') query?: string) {
-    return this.catalogService.searchMovies(query || '');
+  searchMovies(@Query('q') query?: string, @Headers('Accept-Language') language?: string) {
+    return this.catalogService.searchMovies(query || '', language);
   }
 
   @Get('trending')
-  getTrending() {
-    return this.catalogService.getTrending();
+  getTrending(@Headers('Accept-Language') language?: string) {
+    return this.catalogService.getTrending(language);
   }
 
   @Get(':id')

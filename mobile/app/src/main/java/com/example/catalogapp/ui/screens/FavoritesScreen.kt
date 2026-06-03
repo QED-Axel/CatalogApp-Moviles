@@ -1,5 +1,6 @@
 package com.example.catalogapp.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,8 +25,11 @@ fun FavoritesScreen(
     viewModel: FavoritesViewModel
 ) {
     val favorites by viewModel.favorites.collectAsState()
-
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         if (favorites.isEmpty()) {
             Text(stringResource(id = R.string.error_no_favorites))
         } else {

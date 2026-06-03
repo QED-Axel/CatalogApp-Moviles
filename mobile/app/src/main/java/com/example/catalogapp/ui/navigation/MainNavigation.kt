@@ -28,6 +28,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.catalogapp.R
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,64 +44,74 @@ fun MainNavigation(themeViewModel: ThemeViewModel, initialDestination: String) {
     
     val application = LocalContext.current.applicationContext as Application
     val favoritesViewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.provideFactory(application))
+    val catalogViewModel: com.example.catalogapp.ui.viewmodels.CatalogViewModel = viewModel(factory = com.example.catalogapp.ui.viewmodels.CatalogViewModel.Factory)
     val preferencesManager = remember { PreferencesManager(application) }
 
-    // No mostramos el Drawer en la pantalla de onboarding
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val showDrawerAndTopBar = currentBackStackEntry?.destination?.route != Route.Onboarding.route
 
-    if (showDrawerAndTopBar) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet {
-                    Spacer(Modifier.height(16.dp))
-                    Text(stringResource(id = R.string.app_name), modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
-                    HorizontalDivider()
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(id = R.string.nav_home)) },
-                        selected = false,
-                        icon = { Icon(Icons.Default.Home, contentDescription = stringResource(id = R.string.content_desc_home)) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(Route.Home.route) {
-                                popUpTo(Route.Home.route) { inclusive = true }
-                            }
+    val gradientColors = com.example.catalogapp.theme.LocalGradientColors.current
+    
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = showDrawerAndTopBar,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(16.dp))
+                Text(stringResource(id = R.string.app_name), modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                HorizontalDivider()
+                NavigationDrawerItem(
+                    label = { Text(stringResource(id = R.string.nav_home)) },
+                    selected = false,
+                    icon = { Icon(Icons.Default.Home, contentDescription = stringResource(id = R.string.content_desc_home)) },
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(Route.Home.route) {
+                            popUpTo(Route.Home.route) { inclusive = true }
                         }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(id = R.string.nav_favorites)) },
-                        selected = false,
-                        icon = { Icon(Icons.Default.Star, contentDescription = stringResource(id = R.string.content_desc_favorites)) },
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(Route.Favorites.route)
-                        }
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(id = R.string.nav_dark_mode)) },
-                        selected = false,
-                        badge = { Switch(checked = isDarkMode, onCheckedChange = { themeViewModel.toggleTheme() }) },
-                        onClick = { themeViewModel.toggleTheme() }
-                    )
-                }
+                    }
+                )
+                NavigationDrawerItem(
+                    label = { Text(stringResource(id = R.string.nav_favorites)) },
+                    selected = false,
+                    icon = { Icon(Icons.Default.Star, contentDescription = stringResource(id = R.string.content_desc_favorites)) },
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(Route.Favorites.route)
+                    }
+                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                NavigationDrawerItem(
+                    label = { Text(stringResource(id = R.string.nav_dark_mode)) },
+                    selected = false,
+                    badge = { Switch(checked = isDarkMode, onCheckedChange = { themeViewModel.toggleTheme() }) },
+                    onClick = { themeViewModel.toggleTheme() }
+                )
             }
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(gradientColors))
         ) {
             Scaffold(
+                containerColor = Color.Transparent, // Permite ver el Box con gradiente detrás
                 topBar = {
-                    TopAppBar(
-                        title = { Text(stringResource(id = R.string.title_movies_books)) },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = stringResource(id = R.string.content_desc_menu))
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    if (showDrawerAndTopBar) {
+                        TopAppBar(
+                            title = { Text(stringResource(id = R.string.title_movies_books)) },
+                            navigationIcon = {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(Icons.Default.Menu, contentDescription = stringResource(id = R.string.content_desc_menu))
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent,
+                                titleContentColor = MaterialTheme.colorScheme.onSurface
+                            )
                         )
-                    )
+                    }
                 }
             ) { paddingValues ->
                 NavHost(
@@ -115,9 +130,12 @@ fun MainNavigation(themeViewModel: ThemeViewModel, initialDestination: String) {
                         })
                     }
                     composable(Route.Home.route) {
-                        HomeScreen(onNavigateToDetail = { id -> 
-                            navController.navigate(Route.Detail.createRoute(id)) 
-                        })
+                        HomeScreen(
+                            viewModel = catalogViewModel,
+                            onNavigateToDetail = { id -> 
+                                navController.navigate(Route.Detail.createRoute(id)) 
+                            }
+                        )
                     }
                     composable(Route.Favorites.route) {
                         FavoritesScreen(
@@ -130,29 +148,12 @@ fun MainNavigation(themeViewModel: ThemeViewModel, initialDestination: String) {
                     composable(Route.Detail.route) { backStackEntry ->
                         val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
                         if (id != null) {
-                            DetailScreen(id = id)
+                            DetailScreen(id = id, viewModel = catalogViewModel, favoritesViewModel = favoritesViewModel)
                         } else {
                             Text(stringResource(id = R.string.error_invalid_id), modifier = Modifier.padding(16.dp))
                         }
                     }
                 }
-            }
-        }
-    } else {
-        // Render Onboarding without Drawer/TopBar
-        NavHost(
-            navController = navController,
-            startDestination = initialDestination
-        ) {
-            composable(Route.Onboarding.route) {
-                OnboardingScreen(onFinish = {
-                    scope.launch {
-                        preferencesManager.saveOnboardingCompleted(true)
-                        navController.navigate(Route.Home.route) {
-                            popUpTo(Route.Onboarding.route) { inclusive = true }
-                        }
-                    }
-                })
             }
         }
     }

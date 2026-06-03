@@ -79,11 +79,12 @@ export class CatalogService {
     return { count };
   }
 
-  async searchMovies(query: string) {
+  async searchMovies(query: string, language?: string) {
     const apiKey = process.env.TMDB_API_KEY;
     if (!apiKey) throw new NotFoundException('Falta TMDB_API_KEY en el entorno');
 
-    const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-MX&query=${encodeURIComponent(query)}&page=1`);
+    const lang = language || 'es-MX';
+    const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=${lang}&query=${encodeURIComponent(query)}&page=1`);
     const data = await response.json();
 
     if (!data.results) return [];
@@ -99,11 +100,12 @@ export class CatalogService {
     }));
   }
 
-  async getTrending() {
+  async getTrending(language?: string) {
     const apiKey = process.env.TMDB_API_KEY;
     if (!apiKey) throw new NotFoundException('Falta TMDB_API_KEY en el entorno');
 
-    const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${apiKey}&language=es-MX`);
+    const lang = language || 'es-MX';
+    const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${apiKey}&language=${lang}`);
     const data = await response.json();
 
     if (!data.results) return [];
