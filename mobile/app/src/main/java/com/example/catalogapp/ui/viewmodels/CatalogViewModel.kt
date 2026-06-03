@@ -60,6 +60,12 @@ class CatalogViewModel(
         }
     }
 
+    fun refreshAll() {
+        _searchQuery.value = ""
+        fetchCatalog()
+        fetchTrending()
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

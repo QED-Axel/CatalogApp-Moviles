@@ -30,6 +30,9 @@ import com.example.catalogapp.domain.model.MediaItem
 import com.example.catalogapp.domain.model.Resource
 import com.example.catalogapp.ui.viewmodels.CatalogViewModel
 
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: CatalogViewModel,
@@ -40,9 +43,16 @@ fun HomeScreen(
     val trendingState by viewModel.trendingState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    Column(modifier = Modifier
-        .fillMaxSize()
+    val isRefreshing = catalogState is Resource.Loading || trendingState is Resource.Loading
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.refreshAll() },
+        modifier = Modifier.fillMaxSize()
     ) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+        ) {
         // Barra de búsqueda
         OutlinedTextField(
             value = searchQuery,
@@ -125,6 +135,7 @@ fun HomeScreen(
                     }
                 }
             }
+        }
         }
     }
 }
